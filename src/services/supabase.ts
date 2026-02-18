@@ -307,3 +307,158 @@ export const friendshipService = {
     return { data, error };
   },
 };
+
+// POI Service (Points of Interest: Speed Traps, Segments, Car Meets)
+export const poiService = {
+  // Speed Traps
+  async getSpeedTraps() {
+    const { data, error } = await supabase
+      .from('speed_traps')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  async createSpeedTrap(trap: {
+    name: string;
+    latitude: number;
+    longitude: number;
+    description?: string;
+    created_by: string;
+  }) {
+    const { data, error } = await supabase
+      .from('speed_traps')
+      .insert(trap)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  async getSpeedTrapRecords(trapId: string, limit = 10) {
+    const { data, error } = await supabase
+      .from('speed_trap_records')
+      .select('*, profiles(id, email, display_name)')
+      .eq('trap_id', trapId)
+      .order('speed', { ascending: false })
+      .limit(limit);
+    return { data, error };
+  },
+
+  async addSpeedTrapRecord(record: {
+    trap_id: string;
+    user_id: string;
+    vehicle_id?: string;
+    speed: number;
+    vehicle_name?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('speed_trap_records')
+      .insert(record)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  // Segments
+  async getSegments() {
+    const { data, error } = await supabase
+      .from('segments')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  async createSegment(segment: {
+    name: string;
+    start_lat: number;
+    start_lon: number;
+    end_lat: number;
+    end_lon: number;
+    distance_meters: number;
+    description?: string;
+    created_by: string;
+  }) {
+    const { data, error } = await supabase
+      .from('segments')
+      .insert(segment)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  async getSegmentRecords(segmentId: string, limit = 10) {
+    const { data, error } = await supabase
+      .from('segment_records')
+      .select('*, profiles(id, email, display_name)')
+      .eq('segment_id', segmentId)
+      .order('time_seconds', { ascending: true })
+      .limit(limit);
+    return { data, error };
+  },
+
+  async addSegmentRecord(record: {
+    segment_id: string;
+    user_id: string;
+    vehicle_id?: string;
+    time_seconds: number;
+    vehicle_name?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('segment_records')
+      .insert(record)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  // Car Meets
+  async getCarMeets() {
+    const { data, error } = await supabase
+      .from('car_meets')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  async createCarMeet(meet: {
+    name: string;
+    latitude: number;
+    longitude: number;
+    description?: string;
+    schedule?: string;
+    created_by: string;
+  }) {
+    const { data, error } = await supabase
+      .from('car_meets')
+      .insert(meet)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  async getCarMeetAttendeeCount(meetId: string) {
+    const { count, error } = await supabase
+      .from('car_meet_attendees')
+      .select('*', { count: 'exact', head: true })
+      .eq('meet_id', meetId);
+    return { count, error };
+  },
+
+  async addCarMeetAttendee(meetId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('car_meet_attendees')
+      .insert({ meet_id: meetId, user_id: userId })
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  async removeCarMeetAttendee(meetId: string, userId: string) {
+    const { error } = await supabase
+      .from('car_meet_attendees')
+      .delete()
+      .eq('meet_id', meetId)
+      .eq('user_id', userId);
+    return { error };
+  },
+};
