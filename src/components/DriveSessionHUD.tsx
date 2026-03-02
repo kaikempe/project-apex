@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import {
   Clock,
   Route,
 } from 'lucide-react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 
 interface DriveSessionHUDProps {
   isSessionActive: boolean;
@@ -49,6 +49,8 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
   onSaveDriveStats,
   onPauseChange,
 }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [isPaused, setIsPaused] = useState(false);
   
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
@@ -123,42 +125,42 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
     if (gpsAccuracy === null || gpsAccuracy === 0) {
       return {
         label: 'No GPS',
-        color: Colors.textSecondary,
-        icon: <WifiOff size={14} color={Colors.textSecondary} />,
+        color: theme.textSecondary,
+        icon: <WifiOff size={14} color={theme.textSecondary} />,
       };
     }
     if (gpsAccuracy <= 5) {
       return {
         label: 'Excellent',
-        color: Colors.success,
-        icon: <Wifi size={14} color={Colors.success} />,
+        color: theme.success,
+        icon: <Wifi size={14} color={theme.success} />,
       };
     }
     if (gpsAccuracy <= 10) {
       return {
         label: 'Good',
-        color: Colors.success,
-        icon: <Wifi size={14} color={Colors.success} />,
+        color: theme.success,
+        icon: <Wifi size={14} color={theme.success} />,
       };
     }
     if (gpsAccuracy <= 20) {
       return {
         label: 'OK',
-        color: Colors.warning,
-        icon: <Wifi size={14} color={Colors.warning} />,
+        color: theme.warning,
+        icon: <Wifi size={14} color={theme.warning} />,
       };
     }
     if (gpsAccuracy <= 50) {
       return {
         label: 'Poor',
-        color: Colors.error,
-        icon: <Wifi size={14} color={Colors.error} />,
+        color: theme.error,
+        icon: <Wifi size={14} color={theme.error} />,
       };
     }
     return {
       label: 'Bad',
-      color: Colors.error,
-      icon: <WifiOff size={14} color={Colors.error} />,
+      color: theme.error,
+      icon: <WifiOff size={14} color={theme.error} />,
     };
   };
 
@@ -188,12 +190,12 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
           activeOpacity={0.7}
           disabled={!activeVehicle}
         >
-          <Play size={26} color={Colors.textPrimary} fill={Colors.textPrimary} />
+          <Play size={26} color="#FFFFFF" fill="#FFFFFF" />
           <View style={styles.startButtonText}>
             <Text style={styles.startLabel}>Start Drive</Text>
             {activeVehicle ? (
               <View style={styles.vehicleInfo}>
-                <Car size={13} color={Colors.textSecondary} />
+                <Car size={13} color="rgba(255,255,255,0.75)" />
                 <Text style={styles.vehicleName}>{activeVehicle.name}</Text>
               </View>
             ) : (
@@ -217,13 +219,13 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
           <View style={styles.pauseInfo}>
             <Text style={styles.pauseLabel}>Paused</Text>
             <View style={styles.pauseStatsRow}>
-              <Clock size={14} color={Colors.primary} />
+              <Clock size={14} color={theme.primary} />
               <Text style={styles.pauseStatText}>{formatTime(elapsedTime)}</Text>
               <Text style={styles.pauseStatDivider}>•</Text>
-              <Gauge size={14} color={Colors.success} />
+              <Gauge size={14} color={theme.success} />
               <Text style={styles.pauseStatText}>{Math.round(topSpeed)} km/h</Text>
               <Text style={styles.pauseStatDivider}>•</Text>
-              <Route size={14} color={Colors.primary} />
+              <Route size={14} color={theme.primary} />
               <Text style={styles.pauseStatText}>{formatDistance(liveDistance)}</Text>
             </View>
           </View>
@@ -234,7 +236,7 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
               onPress={handleContinue}
               activeOpacity={0.7}
             >
-              <Play size={18} color={Colors.textPrimary} fill={Colors.textPrimary} />
+              <Play size={18} color="#FFFFFF" fill="#FFFFFF" />
               <Text style={styles.continueText}>Continue</Text>
             </TouchableOpacity>
 
@@ -243,7 +245,7 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
               onPress={handleEndDrive}
               activeOpacity={0.7}
             >
-              <Square size={16} color={Colors.textPrimary} fill={Colors.textPrimary} />
+              <Square size={16} color="#FFFFFF" fill="#FFFFFF" />
               <Text style={styles.endText}>End</Text>
             </TouchableOpacity>
           </View>
@@ -257,14 +259,14 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
     <View style={styles.bottomContainer}>
       <View style={styles.statsBar}>
         <View style={styles.statItem}>
-          <Clock size={14} color={Colors.primary} />
+          <Clock size={14} color={theme.primary} />
           <Text style={styles.statValue}>{formatTime(elapsedTime)}</Text>
         </View>
 
         <View style={styles.statDivider} />
 
         <View style={styles.statItem}>
-          <Gauge size={14} color={Colors.success} />
+          <Gauge size={14} color={theme.success} />
           <Text style={styles.statValue}>{Math.round(topSpeed)}</Text>
           <Text style={styles.statUnit}>km/h</Text>
         </View>
@@ -273,7 +275,7 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
 
         {/* Live distance */}
         <View style={styles.statItem}>
-          <Route size={14} color={Colors.primary} />
+          <Route size={14} color={theme.primary} />
           <Text style={styles.statValue}>{formatDistance(liveDistance)}</Text>
         </View>
 
@@ -289,15 +291,15 @@ export const DriveSessionHUD: React.FC<DriveSessionHUDProps> = ({
           onPress={handlePause}
           activeOpacity={0.7}
         >
-          <Pause size={18} color={Colors.warning} />
+          <Pause size={18} color={theme.warning} />
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  // Bottom container - 15px above tab bar
+const createStyles = (theme: any) => StyleSheet.create({
+  // Bottom container - Just above tab bar (touching but not overlapping)
   bottomContainer: {
     position: 'absolute',
     bottom: 15,
@@ -310,19 +312,19 @@ const styles = StyleSheet.create({
   startButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
+    backgroundColor: theme.primary,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 14,
     gap: 12,
-    shadowColor: Colors.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 8,
   },
   startButtonDisabled: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: theme.secondary,
     shadowOpacity: 0,
   },
   startButtonText: {
@@ -331,7 +333,7 @@ const styles = StyleSheet.create({
   startLabel: {
     fontSize: 17,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
   },
   vehicleInfo: {
     flexDirection: 'row',
@@ -341,18 +343,18 @@ const styles = StyleSheet.create({
   },
   vehicleName: {
     fontSize: 13,
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.75)',
   },
   noVehicle: {
     fontSize: 12,
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.75)',
     marginTop: 2,
   },
   gpsChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: Colors.background + '80',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -366,13 +368,13 @@ const styles = StyleSheet.create({
   statsBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.secondary,
+    backgroundColor: theme.surface + 'F0',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 14,
     gap: 10,
     borderWidth: 1,
-    borderColor: Colors.primary + '30',
+    borderColor: theme.border,
   },
   statItem: {
     flexDirection: 'row',
@@ -382,12 +384,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: theme.textPrimary,
     fontVariant: ['tabular-nums'],
   },
   statUnit: {
     fontSize: 10,
-    color: Colors.textSecondary,
+    color: theme.textSecondary,
     marginLeft: -2,
   },
   gpsLabel: {
@@ -397,39 +399,39 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 20,
-    backgroundColor: Colors.textSecondary + '30',
+    backgroundColor: theme.textSecondary + '30',
   },
   pauseButton: {
     marginLeft: 'auto',
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.warning + '20',
+    backgroundColor: theme.warning + '20',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.warning + '50',
+    borderColor: theme.warning + '50',
   },
 
-  // Pause container
+  // Pause container - At bottom, touching tab bar
   pauseContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 160,
-    backgroundColor: Colors.background + 'F5',
+    backgroundColor: theme.background + 'F5',
     justifyContent: 'flex-end',
-    paddingBottom: 15,
+    paddingBottom: 30,
     paddingHorizontal: 16,
     zIndex: 150,
   },
   pauseBar: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: theme.secondary,
     borderRadius: 14,
     padding: 14,
     borderWidth: 2,
-    borderColor: Colors.warning,
+    borderColor: theme.warning,
   },
   pauseInfo: {
     marginBottom: 12,
@@ -437,7 +439,7 @@ const styles = StyleSheet.create({
   pauseLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.warning,
+    color: theme.warning,
     marginBottom: 4,
   },
   pauseStatsRow: {
@@ -448,10 +450,10 @@ const styles = StyleSheet.create({
   pauseStatText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.textPrimary,
+    color: theme.textPrimary,
   },
   pauseStatDivider: {
-    color: Colors.textSecondary,
+    color: theme.textSecondary,
     marginHorizontal: 4,
   },
   pauseActions: {
@@ -463,7 +465,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.success,
+    backgroundColor: theme.success,
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
@@ -471,13 +473,13 @@ const styles = StyleSheet.create({
   continueText: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
   },
   endButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.error,
+    backgroundColor: theme.error,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -486,6 +488,6 @@ const styles = StyleSheet.create({
   endText: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
   },
 });
