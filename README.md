@@ -194,5 +194,5 @@ Mapbox's vector tile renderer supports fully custom OLED dark themes at the tile
 
 ## License
 
-Copyright © 2026 Kaike Kempe. All rights reserved.
+Copyright © 2026 Kai Kempe. All rights reserved.
 Source code is proprietary — see [LICENSE](LICENSE).
