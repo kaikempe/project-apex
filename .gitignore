@@ -1,5 +1,23 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# Source code — not public
+src/
+app/
+scripts/
+supabase/
+docs/
+CLAUDE.md
+package-lock.json
+
+# Internal project docs
+ERRORS_AND_FIXES.md
+FEATURES_TO_ADD.md
+PROJECT_STATUS.md
+QUICK_START_NEW_FEATURES.md
+ROADMAP.md
+SETUP_GUIDE.md
+VOICE_MESSAGES_SETUP.md
+
 # dependencies
 node_modules/
 
@@ -31,6 +49,7 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript

@@ -1,37 +1,72 @@
 {
   "expo": {
-    "name": "project-apex",
-    "slug": "project-apex",
+    "name": "Apex",
+    "slug": "apex",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "scheme": "apex",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.projectapex",
+      "supportsTablet": false,
+      "bundleIdentifier": "io.apexapp.apex",
+      "buildNumber": "1",
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": ["35F9.1"]
+          }
+        ]
+      },
       "infoPlist": {
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Apex needs location access to track your drives even when in the background.",
-        "NSLocationAlwaysUsageDescription": "Apex needs background location to continue tracking.",
-        "NSLocationWhenInUseUsageDescription": "Apex needs location to show your position on the map.",
-        "UIBackgroundModes": ["location", "fetch"]
-        
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Apex uses your location to track drives, show your position on the map, and detect speed traps and segments in real time.",
+        "NSLocationAlwaysUsageDescription": "Apex uses background location to continue tracking your drive when you switch apps.",
+        "NSLocationWhenInUseUsageDescription": "Apex uses your location to track drives and show nearby drivers.",
+        "NSMicrophoneUsageDescription": "Apex uses the microphone for push-to-talk voice chat during convoy drives.",
+        "NSPhotoLibraryUsageDescription": "Apex uses your photo library to let you upload a profile photo and photo spot images.",
+        "NSPhotoLibraryAddUsageDescription": "Apex saves photo mode screenshots to your photo library.",
+        "NSCameraUsageDescription": "Apex uses the camera for photo mode during drives and profile photo uploads.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "audio"
+        ],
+        "LSApplicationQueriesSchemes": [
+          "maps",
+          "comgooglemaps"
+        ]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000"
       },
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION", 
-        "ACCESS_BACKGROUND_LOCATION",
-        "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_LOCATION"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE"
       ],
-      "package": "com.anonymous.projectapex",
+      "package": "io.apexapp.apex",
       "intentFilters": [
         {
           "action": "VIEW",
@@ -54,22 +89,43 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "@rnmapbox/maps"
-      ],
       "expo-secure-store",
+      "expo-apple-authentication",
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Apex needs location to track drives.",
+          "locationAlwaysAndWhenInUsePermission": "Apex needs location to track your drives in real time.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#007AFF",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Apex uses your photo library for profile photos and photo spot submissions.",
+          "cameraPermission": "Apex uses the camera for photo mode during drives."
+        }
+      ],
+      "@sentry/react-native"
     ],
+    "extra": {
+      "eas": {
+        "projectId": "666f21fc-c83f-4161-ab1a-f7264b615823"
+      },
+      "router": {}
+    },
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "driveapexapp"
   }
 }
