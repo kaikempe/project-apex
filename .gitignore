@@ -8,6 +8,13 @@ supabase/
 docs/
 CLAUDE.md
 package-lock.json
+components/
+constants/
+app.json
+eas.json
+package.json
+tsconfig.json
+.vscode/
 
 # Internal project docs
 ERRORS_AND_FIXES.md
