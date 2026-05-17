@@ -65,3 +65,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+.aider*
+
+# Claude Code — private session data
+.claude/
+memory/
