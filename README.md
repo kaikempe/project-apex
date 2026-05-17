@@ -46,43 +46,56 @@ The app is currently pending App Store submission.
 - OLED speedometer with live speed, heading, altitude, and g-force display
 - Background GPS recording — sessions survive app backgrounding
 - Automatic drive start/end detection
-- Drive history with map replay, speed graph scrubber, tags, and notes
+- Drive history with map replay (animated position + speed badge, 1×/2×/5×/10× playback), speed graph scrubber, tags, and notes
 - Reverse-geocoded location names (city / district) per drive
+- Drive tagging — preset tag groups (road type, conditions, purpose) and free-text custom tags
+- Drive notes — 200-character notes attached per drive
+- Weather integration — condition and temperature saved per drive via OpenWeather API
+- Photo mode — in-app screenshot capture with frame selector overlay
+- G-force / Telemetry — 10Hz accelerometer recording with low-pass filter; lateral, braking, and acceleration peak stats; g-force graph in drive detail
 - Privacy mode — suppresses all broadcasts and leaderboard writes for a session
 
-### Sprint Timing
+### Sprint & Track Timing
 - 0–100 km/h and 100–200 km/h modes
 - Accelerometer-assisted launch detection for ±40ms accuracy
 - Ghost overlay — renders your personal-best ghost position on the map in real time during a sprint
 - Sprint results card auto-generated as an OLED PNG, shareable via native share sheet
 - Per-vehicle-class sprint leaderboards
+- **Drag Strip / Track Mode** — 60ft, 1/8 mile, 1000ft, and 1/4 mile splits; accessible via Sprint Mode selector
 
 ### Social Layer
-- **Convoys** — real-time group drives: push-to-talk audio (1.5-second chunks over Supabase Realtime broadcast, no database writes), live member positions on map, and a dashed route line between members
+- **Convoys** — real-time group drives: push-to-talk audio (1.5-second chunks over Supabase Realtime broadcast, no database writes), live member positions on map, dashed route line between members
+- **Convoy Chat** — real-time messages with emoji reactions, typing indicators, and unread badge
 - **Crews** — persistent groups with XP contribution tracking and a global crew leaderboard
 - **Crew Wars** — 4-crew league brackets, 3-day windows, per-capita scoring to keep small crews competitive
 - **Versus** — 8-stat head-to-head comparison against any friend or the global average driver
 - **1v1 Challenges** — async sprint challenges with accept/decline flow and push notifications
-- **Tournaments** — bracket-style sprint competitions
-- **Rivals** — auto-assigned based on similar stats; tracked head-to-head record over time
-- Social feed: drive posts, segment records, achievements, level-ups, and manual posts
+- **Tournaments** — bracket-style sprint competitions with prizing distribution
+- **Rivals** — tracked head-to-head record and stat comparison over time
+- **Live Segment Racing** — real-time invite flow, race HUD, and results stored per race
+- Social feed: drive posts, segment records, achievements, level-ups, manual posts (280 chars), and voice messages at 1×/1.5×/2× speed
 
 ### Community POI System
 - **Speed traps** — crowdsourced locations with 300m advance TTS warning and per-trap leaderboards
 - **Timed segments** — start/end gate detection, optional checkpoint validation, ghost comparison, per-segment leaderboards
-- **Photo spots** — community-tagged scenic locations on the map
-- **Community routes** — shareable drive paths with metadata
+- **Photo spots** — community-tagged scenic locations with gallery, likes, and comments
+- **Community routes** — shareable drive paths with metadata, likes, and saves
 - In-app segment creator: 5-step modal flow with live gate placement on a mini map
-- POI ratings, proximity filtering that scales radius by current speed
+- POI ratings (thumbs up/down), proximity filtering that scales radius by current speed
+- **Exploration Grid** — 1km² hex grid heatmap that tracks every cell you've driven through; 5 exploration achievements
 
 ### Gamification
-- XP and levelling (100 levels) with TTS level-up announcements
-- 108 achievements across 6 categories, persisted per profile
+- XP and levelling (100 levels) with TTS level-up announcements and full-screen particle celebration
+- 108 achievements across 6 categories, persisted per profile; pin up to 3 as a featured showcase; ETA predictions under progress bars
 - Daily and weekly challenges with live progress bars and countdown timers to reset
 - Season leagues with regional and global leaderboards
 - Drive streaks with a push notification reminder at 8pm if not yet driven
-- Goals system — distance, top speed, sprint count targets
-- Recap — weekly / monthly / yearly stats with a shareable highlight card
+- Daily drive rewards — escalating XP (50–10,000 XP) for qualifying drives
+- Goals system — distance, time, sprint count, and custom targets with deadline tracking
+- Personal Records Dashboard — 0–100, 100–200, top speed, longest drive, most distance in a day
+- 30+ unlockable profile customisations — frames, titles, badges, themes; rarity system (common → legendary)
+- Recap — weekly / monthly / yearly stats with a shareable OLED highlight card
+- AI Insights feed — multi-provider pipeline (Claude Haiku / Groq Llama 3.1 / local rule-based fallback) with daily cache
 
 ### Safety
 - Crash detection — 10Hz accelerometer, gravity-filtered; ≥3g sustained ≥200ms triggers an alert with "I'm fine" / "Call Emergency (112)" options and a 60-second cooldown
@@ -90,7 +103,7 @@ The app is currently pending App Store submission.
 ### Profile & Settings
 - Avatar upload (photo picker → Supabase Storage)
 - Vehicle garage — add cars with make, model, year, and power; track per-vehicle stats
-- Vehicle comparison — 6-stat side-by-side table
+- Vehicle comparison — 6-stat side-by-side table (0–100, 100–200, top speed, drives, distance, best sprint)
 - Referral system with shareable invite links
 - Stats percentile badges vs global userbase (top speed, distance, sprints, segments)
 - Sign in with Apple
@@ -99,22 +112,24 @@ The app is currently pending App Store submission.
 - Offline queue — drives, sprints, XP, and achievements queue locally and drain automatically on reconnect
 - GDPR data export — full JSON bundle of all user data, shared via native share sheet
 - Account deletion — cascades all user data across the database
+- Haptic feedback — wired to achievements, level-ups, sprint PRs, drive start/end, segment completions, and more
+- Voice commands — toggle in Settings (requires native rebuild to activate)
 
 ---
 
 ## Architecture
 
-The app is ~44,000 lines of TypeScript across 186 source files. It uses Expo's managed workflow with Expo Router for file-based navigation and 17 React Context providers for state.
+The app is ~82,000 lines of TypeScript across 200 source files. It uses Expo's managed workflow with Expo Router for file-based navigation and 18 React Context providers for state.
 
 ```
-app/                      Expo Router screens (32 screens)
+app/                      Expo Router screens (41 screens)
   _layout.tsx             Root: provider stack, ErrorBoundary, AuthGate
   (tabs)/                 Tab navigator (Drive · Stats · Social · Explore · Profile)
 src/
-  components/             59 reusable UI components
-  context/                17 React Context providers
+  components/             73 reusable UI components
+  context/                18 React Context providers
   hooks/                  GPS, sprint timer, live tracking, deep links
-  services/               Supabase, AudioQueue, SegmentDetection, PTT, crash detection, ...
+  services/               49 services — Supabase, AudioQueue, SegmentDetection, PTT, crash detection, live racing, exploration, ...
   theme/                  OLED colour palette + 6 Mapbox map styles
 supabase/functions/       Edge Functions (push notification delivery)
 ```
@@ -126,7 +141,7 @@ ThemeProvider → AuthProvider → MapThemeProvider → POIProvider →
 FriendsProvider → ConvoyProvider → CrewProvider → AudioProvider →
 XPProvider → DailyChallengesProvider → VehicleProvider →
 AchievementsProvider → ChallengeProvider → TournamentProvider →
-RivalProvider → GoalsProvider → NetworkProvider
+RivalProvider → GoalsProvider → LiveRaceProvider → NetworkProvider
 ```
 
 ---
@@ -174,13 +189,13 @@ Mapbox's vector tile renderer supports fully custom OLED dark themes at the tile
 
 | | |
 |--|--|
-| Lines of code | ~44,000 |
-| Source files | 186 |
-| Screens | 32 |
-| Components | 59 |
-| Context providers | 17 |
-| Services | 35+ |
-| Database tables | 38 |
+| Lines of code | ~82,000 |
+| Source files | 200 |
+| Screens | 41 |
+| Components | 73 |
+| Context providers | 18 |
+| Services | 49 |
+| Database tables | 60+ |
 | Achievements | 108 |
 | Target devices | iPhone 12 mini → iPhone 17 Pro Max |
 
